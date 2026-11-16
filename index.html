@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>아파트</title>
+    <style>
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+      #unity-canvas { position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: #000; outline: none; }
+      #loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+                 color: #999; font: 15px sans-serif; background: #000; }
+      #bar { width: 240px; height: 2px; margin-top: 18px; background: #222; }
+      #fill { width: 0; height: 100%; background: #bbb; }
+      #notice { position: fixed; left: 0; right: 0; bottom: 28px; text-align: center; color: #777; font: 13px sans-serif; display: none; }
+    </style>
+  </head>
+  <body>
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+    <div id="loading"><div id="message">불러오는 중</div><div id="bar"><div id="fill"></div></div></div>
+    <div id="notice">이 게임은 PC에서 키보드와 마우스로 플레이합니다.</div>
+    <script src="Build/WebFinal.loader.js"></script>
+    <script>
+      var loading = document.getElementById("loading");
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
+        document.getElementById("notice").style.display = "block";
+
+      createUnityInstance(document.getElementById("unity-canvas"), {
+        arguments: [],
+        dataUrl: "Build/WebFinal.data.unityweb",
+        frameworkUrl: "Build/WebFinal.framework.js.unityweb",
+        codeUrl: "Build/WebFinal.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "아파트",
+        productVersion: "0.1.0",
+        // 고해상도(레티나) 화면에서는 실제 픽셀로 그려 흐려지지 않게 하되, 느려지지 않게 세로 1440픽셀까지만 올린다
+        devicePixelRatio: Math.min(window.devicePixelRatio || 1, Math.max(1, 1440 / window.innerHeight)),
+      }, function (progress) {
+        document.getElementById("fill").style.width = Math.round(progress * 100) + "%";
+      }).then(function (unityInstance) {
+        window.unityInstance = unityInstance;
+        loading.style.display = "none";
+      }).catch(function (message) {
+        document.getElementById("message").textContent = "게임을 불러오지 못했습니다: " + message;
+      });
+    </script>
+  </body>
+</html>
